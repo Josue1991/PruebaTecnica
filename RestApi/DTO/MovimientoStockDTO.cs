@@ -1,14 +1,12 @@
 ﻿using RestApi.Enums;
 
-namespace RestApi.Entities
+namespace RestApi.DTO
 {
-    public class Movimientos
+    public class MovimientoStockDTO
     {
         public int Id { get; set; }
 
         public int ProductId { get; set; }
-
-        public Producto Product { get; set; } = default!;
 
         public MovimientoStock Tipo { get; set; }
 
@@ -16,6 +14,6 @@ namespace RestApi.Entities
 
         public string Razon { get; set; } = string.Empty;
 
-        public DateTime FechaMovimiento { get; set; } = DateTime.UtcNow;
+        public DateTime Creado { get; set; }
     }
 }

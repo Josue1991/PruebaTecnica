@@ -12,21 +12,31 @@ namespace RestApi.Data
         {
         }
 
-        public DbSet<Producto> Products => Set<Producto>();
+        public DbSet<Producto> Productos => Set<Producto>();
 
-        public DbSet<Movimientos> StockMovements => Set<Movimientos>();
+        public DbSet<Movimientos> MovimientosStock => Set<Movimientos>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             builder.Entity<Producto>()
+                .ToTable("Productos")
                 .HasIndex(p => p.Codigo)
                 .IsUnique();
 
             builder.Entity<Producto>()
                 .Property(p => p.PrecioUnitario)
                 .HasPrecision(18, 2);
+
+            builder.Entity<Producto>()
+                .HasMany(p => p.StockMovements)
+                .WithOne(m => m.Product)
+                .HasForeignKey(m => m.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Movimientos>()
+                .ToTable("MovimientosStock");
         }
     }
 }
