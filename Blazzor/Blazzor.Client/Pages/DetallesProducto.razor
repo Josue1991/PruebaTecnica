@@ -53,7 +53,7 @@ else
     <h5>Registrar Movimiento de Stock</h5>
 
     <EditForm Model="movementModel"
-              OnValidSubmit="SaveMovement"
+              OnValidSubmit="GuardarMovimiento"
               FormName="MovementForm">
 
         <DataAnnotationsValidator />
@@ -147,13 +147,13 @@ else
         producto = await ProductoService.GetProductAsync(Id);
     }
 
-   private async Task SaveMovement()
+   private async Task GuardarMovimiento()
    {
        try
        {
            Console.WriteLine($"Intentando crear movimiento: Tipo={movementModel.Tipo}, Cantidad={movementModel.Cantidad}");
            
-           await ProductoService.CreateMovementAsync(Id, movementModel);
+           await ProductoService.CrearMovimientoAsync(Id, movementModel);
 
            Console.WriteLine("Movimiento creado exitosamente");
            await Notification.ShowSuccess("Stock registrado correctamente.");
@@ -178,27 +178,5 @@ else
     private void Regresar()
     {
         Navigation.NavigateTo("/products");
-    }
-
-    private async Task TestNotification()
-    {
-        Console.WriteLine("=== TEST NOTIFICACIÓN INICIADO ===");
-        
-        try
-        {
-            await Notification.ShowInfo("Este es un mensaje de prueba");
-            await Task.Delay(500);
-            await Notification.ShowSuccess("¡Operación exitosa!");
-            await Task.Delay(500);
-            await Notification.ShowWarning("Esta es una advertencia");
-            await Task.Delay(500);
-            await Notification.ShowError("Este es un error de prueba");
-            
-            Console.WriteLine("=== TEST NOTIFICACIÓN COMPLETADO ===");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"ERROR en TestNotification: {ex.Message}");
-        }
     }
 }

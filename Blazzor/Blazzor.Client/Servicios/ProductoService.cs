@@ -36,7 +36,7 @@ namespace Blazzor.Client.Servicios
             }
         }
 
-        public async Task CreateMovementAsync(int productId, CrearMovimientoStock dto)
+        public async Task CrearMovimientoAsync(int productId, CrearMovimientoStock dto)
         {
             var response = await _http.PostAsJsonAsync(
                 $"api/products/{productId}/movements",
