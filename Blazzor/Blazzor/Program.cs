@@ -1,10 +1,12 @@
 using Blazzor.Client.Pages;
+using Blazzor.Client.Servicios;
 using Blazzor.Components;
 using Blazzor.Components.Account;
 using Blazzor.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,18 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingServerAuthenticationStateProvider>();
+
+// Registrar ProductoService en el servidor también
+builder.Services.AddScoped<ProductoService>();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped(sp =>
+    new HttpClient
+    {
+        BaseAddress = new Uri("https://localhost:7243/")
+    });
+
+// Registrar MudBlazor Services (opcional)
+builder.Services.AddMudServices();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>

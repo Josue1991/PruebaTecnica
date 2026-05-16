@@ -1,0 +1,43 @@
+/* Estilos forzados para MudBlazor Snackbar */
+
+/* Contenedor del Snackbar - SIEMPRE VISIBLE */
+.mud-snackbar-container {
+    position: fixed !important;
+    z-index: 999999 !important;
+    pointer-events: auto !important;
+}
+
+/* Snackbar individual */
+.mud-snackbar {
+    min-width: 300px !important;
+    padding: 16px !important;
+    margin: 8px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    font-size: 14px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Colores por severidad */
+.mud-alert-filled-success {
+    background-color: #4caf50 !important;
+    color: white !important;
+}
+
+.mud-alert-filled-error {
+    background-color: #f44336 !important;
+    color: white !important;
+}
+
+.mud-alert-filled-info {
+    background-color: #2196f3 !important;
+    color: white !important;
+}
+
+.mud-alert-filled-warning {
+    background-color: #ff9800 !important;
+    color: #000 !important;
+}
+

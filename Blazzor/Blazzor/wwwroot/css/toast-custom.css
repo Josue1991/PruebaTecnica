@@ -1,0 +1,32 @@
+/* Estilos personalizados para Blazored Toast */
+.blazored-toast-container {
+    z-index: 9999 !important;
+}
+
+.blazored-toast {
+    min-width: 300px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.blazored-toast-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.blazored-toast-error {
+    background-color: #dc3545;
+    color: white;
+}
+
+.blazored-toast-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.blazored-toast-warning {
+    background-color: #ffc107;
+    color: #212529;
+}

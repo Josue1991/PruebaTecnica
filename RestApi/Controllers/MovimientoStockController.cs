@@ -8,7 +8,6 @@ using RestApi.Enums;
 
 namespace RestApi.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/products/{productId:int}/movements")]
 public class StockMovementsController : ControllerBase

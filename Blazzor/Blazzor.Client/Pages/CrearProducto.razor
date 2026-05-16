@@ -1,0 +1,89 @@
+﻿@page "/products/crear"
+@rendermode InteractiveWebAssembly
+
+@using Blazzor.Client.Modelos
+@using Blazzor.Client.Servicios
+
+@inject ProductoService ProductoService
+@inject NavigationManager Navigation
+@inject NotificationService Notification
+
+<h3>Crear Productos</h3>
+
+<EditForm Model="model" OnValidSubmit="HandleCrearProducto" FormName="CreateProductForm">
+
+    <DataAnnotationsValidator />
+
+    <ValidationSummary class="text-danger" />
+
+    <div class="mb-3">
+        <label class="form-label">Descripción</label>
+        <InputText class="form-control"
+                   @bind-Value="model.Descripcion" />
+        <ValidationMessage For="@(() => model.Descripcion)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Código</label>
+        <InputText class="form-control"
+                   @bind-Value="model.Codigo" />
+        <ValidationMessage For="@(() => model.Codigo)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Categoría</label>
+        <InputText class="form-control"
+                   @bind-Value="model.Categoria" />
+        <ValidationMessage For="@(() => model.Categoria)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Cantidad en Stock</label>
+        <InputNumber class="form-control"
+                     @bind-Value="model.CantidadStock" />
+        <ValidationMessage For="@(() => model.CantidadStock)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Precio Unitario</label>
+        <InputNumber class="form-control"
+                     @bind-Value="model.PrecioUnitario" />
+        <ValidationMessage For="@(() => model.PrecioUnitario)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary me-2">
+            <i class="bi bi-save"></i> Guardar
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancelar">
+            <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+    </div>
+
+</EditForm>
+
+@code {
+
+    private CrearProductoDTO model = new();
+
+    private async Task HandleCrearProducto()
+    {
+        try
+        {
+            await ProductoService.CrearProductoAsync(model);
+
+            await Notification.ShowSuccess("Producto creado correctamente.");
+
+            Navigation.NavigateTo("/products");
+        }
+        catch (Exception ex)
+        {
+            await Notification.ShowError($"Error al crear el producto: {ex.Message}");
+        }
+    }
+
+    private void Cancelar()
+    {
+        Navigation.NavigateTo("/products");
+    }
+}

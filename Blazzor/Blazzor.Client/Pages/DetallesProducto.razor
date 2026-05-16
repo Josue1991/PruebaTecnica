@@ -1,0 +1,203 @@
+﻿@page "/products/{Id:int}"
+@rendermode InteractiveWebAssembly
+
+@using Blazzor.Client.Modelos
+@using Blazzor.Client.Servicios
+
+@inject ProductoService ProductoService
+@inject NavigationManager Navigation
+@inject NotificationService Notification
+
+<h3>Detalles del Producto</h3>
+
+<div class="mb-3">
+    <button class="btn btn-secondary" @onclick="Regresar">
+        <i class="bi bi-arrow-left"></i> Regresar a la lista
+    </button>
+</div>
+
+@if (producto is null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="card p-3 mb-4">
+
+        <h4>@producto.Descripcion</h4>
+
+        <p><strong>Código:</strong> @producto.Codigo</p>
+
+        <p><strong>Categoría:</strong> @producto.Categoria</p>
+
+        <p>
+            <strong>Stock:</strong>
+
+            <span class="@(producto.CantidadStock < 10
+                                  ? "text-danger"
+                                  : "text-success")">
+
+            @producto.CantidadStock
+        </span>
+    </p>
+
+        <p>
+            <strong>Precio:</strong>
+            $@producto.PrecioUnitario.ToString("N2")
+        </p>
+
+    </div>
+    <div class="card p-3 mb-4">
+
+    <h5>Registrar Movimiento de Stock</h5>
+
+    <EditForm Model="movementModel"
+              OnValidSubmit="SaveMovement"
+              FormName="MovementForm">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" />
+
+        <div class="mb-3">
+            <label class="form-label">Tipo</label>
+            <InputSelect class="form-control"
+                         @bind-Value="movementModel.Tipo">
+                    <option value="1">Vendido</option>
+                    <option value="2">Comprado</option>
+            </InputSelect>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Cantidad</label>
+            <InputNumber class="form-control"
+                         @bind-Value="movementModel.Cantidad" />
+            <ValidationMessage For="@(() => movementModel.Cantidad)" class="text-danger" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Razón</label>
+            <InputText class="form-control"
+                       @bind-Value="movementModel.Razon" />
+            <ValidationMessage For="@(() => movementModel.Razon)" class="text-danger" />
+        </div>
+
+        <button type="submit" class="btn btn-success">
+           <i class="bi bi-save"></i> Guardar 
+        </button>
+
+    </EditForm>
+
+</div>
+    
+    <h4>Movimientos Recientes</h4>
+
+@if (producto.MovmientosRecientes.Any())
+    {
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Razón</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var movement in producto.MovmientosRecientes)
+                {
+                    <tr>
+                        <td>
+                            @(movement.Tipo == 1
+                                            ? "Vendido"
+                                            : "Comprado")
+            </td>
+
+                        <td>@movement.Cantidad</td>
+
+                        <td>@movement.Razon</td>
+
+                        <td>@movement.Creado.ToLocalTime()</td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+    }
+    else
+    {
+        <p>No tiene movimientos.</p>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private DetalleProductoDTO? producto;
+    private CrearMovimientoStock movementModel = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        producto = await ProductoService.GetProductAsync(Id);
+    }
+
+   private async Task SaveMovement()
+   {
+       try
+       {
+           Console.WriteLine($"Intentando crear movimiento: Tipo={movementModel.Tipo}, Cantidad={movementModel.Cantidad}");
+           
+           await ProductoService.CreateMovementAsync(Id, movementModel);
+
+           Console.WriteLine("Movimiento creado exitosamente");
+           await Notification.ShowSuccess("Stock registrado correctamente.");
+
+           movementModel = new();
+           producto = await ProductoService.GetProductAsync(Id);
+
+           StateHasChanged();
+       }
+       catch (HttpRequestException httpEx)
+       {
+           Console.WriteLine($"Error HTTP: {httpEx.Message}");
+           await Notification.ShowError(httpEx.Message);
+       }
+       catch (Exception ex)
+       {
+           Console.WriteLine($"Error general: {ex.Message}");
+           await Notification.ShowError($"No se pudo crear el movimiento: {ex.Message}");
+       }
+   }
+
+    private void Regresar()
+    {
+        Navigation.NavigateTo("/products");
+    }
+
+    private async Task TestNotification()
+    {
+        Console.WriteLine("=== TEST NOTIFICACIÓN INICIADO ===");
+        
+        try
+        {
+            await Notification.ShowInfo("Este es un mensaje de prueba");
+            await Task.Delay(500);
+            await Notification.ShowSuccess("¡Operación exitosa!");
+            await Task.Delay(500);
+            await Notification.ShowWarning("Esta es una advertencia");
+            await Task.Delay(500);
+            await Notification.ShowError("Este es un error de prueba");
+            
+            Console.WriteLine("=== TEST NOTIFICACIÓN COMPLETADO ===");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR en TestNotification: {ex.Message}");
+        }
+    }
+}

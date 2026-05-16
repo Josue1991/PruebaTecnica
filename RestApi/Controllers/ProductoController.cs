@@ -7,7 +7,6 @@ using RestApi.Entities;
 
 namespace RestApi.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/products")]
 public class ProductsController : ControllerBase
@@ -17,6 +16,40 @@ public class ProductsController : ControllerBase
     public ProductsController(ApplicationDbContext context)
     {
         _context = context;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ProductoDTO>>> GetProducts(
+        [FromQuery] string? categoria,
+        [FromQuery] int? lowStockThreshold)
+    {
+        var query = _context.Productos.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(categoria))
+        {
+            query = query.Where(p => p.Categoria == categoria);
+        }
+
+        if (lowStockThreshold.HasValue)
+        {
+            query = query.Where(p =>
+                p.CantidadStock < lowStockThreshold.Value);
+        }
+
+        var products = await query
+            .Select(p => new ProductoDTO
+            {
+                Id = p.Id,
+                Descripcion = p.Descripcion,
+                Codigo = p.Codigo,
+                Categoria = p.Categoria,
+                CantidadStock = p.CantidadStock,
+                PrecioUnitario = p.PrecioUnitario,
+                Creado = p.Creado
+            })
+            .ToListAsync();
+
+        return Ok(products);
     }
 
     [HttpGet("{id:int}")]
